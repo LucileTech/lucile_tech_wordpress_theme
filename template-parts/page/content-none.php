@@ -1,40 +1,46 @@
 <?php
 /**
- * The template for displaying archive pages.
+ * Template part for displaying a message that posts cannot be found
  */
-get_header();
 ?>
 
-<div id="primary" class="content-area">
-    <main id="main" class="site-main">
-        <?php  if ( have_posts() ) :  ?>
-            <header class="archive-page-header">
-                <?php
-                    the_archive_title( '<h1 class="archive-title">', '</h1>' );
-                    the_archive_description( '<div class="archive-description">', '</div>' );
-                ?>
-            </header>
+<section class="no-results not-found">
+	<header class="page-header">
+		<h1 class="page-title"><?php esc_html_e( 'Nothing Found', 'herobiz' ); ?></h1>
+	</header>
 
-            <?php
-                // Start the loop.
-                while ( have_posts() ) :
-                    the_post();
-                    get_template_part( 'template-parts/post/content', get_post_format() );
-                endwhile;
+	<div class="page-content">
+		<?php
+		if ( is_home() && current_user_can( 'publish_posts' ) ) :
 
-                echo paginate_links( [
-                    'prev_text' => esc_html__( 'Prev', 'herobiz' ),
-                    'next_text' => esc_html__( 'Next', 'herobiz' ),
-                ] );
+			printf(
+				'<p>' . wp_kses(
+					/* translators: 1: link to WP admin new post page. */
+					__( 'Ready to publish your first post? <a href="%1$s">Get started here</a>.', 'herobiz' ),
+					array(
+						'a' => array(
+							'href' => array(),
+						),
+					)
+				) . '</p>',
+				esc_url( admin_url( 'post-new.php' ) )
+			);
 
-        else :
-            get_template_part( 'template-parts/page/content', 'none' );
-        ?>
-        <?php endif; ?>
+		elseif ( is_search() ) :
+			?>
 
-        <?php get_sidebar(); ?>
-    </main>
-</div>
+			<p><?php esc_html_e( 'Sorry, but nothing matched your search terms. Please try again with some different keywords.', 'herobiz' ); ?></p>
+			<?php
+			get_search_form();
 
-<?php
-get_footer();
+		else :
+			?>
+
+			<p><?php esc_html_e( 'It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help.', 'herobiz' ); ?></p>
+			<?php
+			get_search_form();
+
+		endif;
+		?>
+	</div>
+</section>
